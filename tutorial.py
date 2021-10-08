@@ -1,5 +1,3 @@
-
-from dotenv import load_dotenv
 import discord
 from discord.ext import commands,tasks
 
@@ -23,45 +21,45 @@ prefix = configData["Prefix"]
 bot = commands.Bot(command_prefix=prefix)
 
 
-load_dotenv()
-# When new member is added to server
-TOKEN = os.getenv('DISCORD_TOKEN')
+# load_dotenv()
+# # When new member is added to server
+# TOKEN = os.getenv('DISCORD_TOKEN')
 
-client = discord.Client()
-
-
-@client.event
-async def on_ready():
-    print(f'{client.user.name} has joined Discord!')
+# client = discord.Client()
 
 
-@client.event
-async def on_member_join(member):
-    await member.create_dm()
-    await member.dm_channel.send(
-        f'Hello {member.name}!! Welcome to Our Discord Server!'
-    )
-
-client.run(TOKEN)
+# @client.event
+# async def on_ready():
+#     print(f'{client.user.name} has joined Discord!')
 
 
-@bot.event
-async def on_ready():
-    print("Bot is ready.")
+# @client.event
+# async def on_member_join(member):
+#     await member.create_dm()
+#     await member.dm_channel.send(
+#         f'Hello {member.name}!! Welcome to Our Discord Server!'
+#     )
+
+# client.run(TOKEN)     
+@bot.command()
+# To load a cogfile 
+async def loadcog(ctx,cog):
+      bot.load_extension(f"cogs.{cog}")        
 
 
 @bot.command()
-# command for ping
-async def ping(ctx):
-    latent = round(bot.latency * 1000, 1)
-    await ctx.send(f"Ping ! {latent}ms")
+async def unloadcog(ctx,cog):
+      bot.unload_extension(f"cogs.{cog}")
+
+for file_name in os.listdir("./cogs"):
+    if file_name.endswith(".py"):
+        bot.load_extension(f"cogs.{file_name[:-3]}")
 
 
-@bot.command()
-# Say Hello to a particular member
-async def hi(ctx, member):
-    await ctx.send(f"Hello! {member}")
 
+# @bot.command()
+# async def hi(ctx,member):
+#     await ctx.send(f"Hello {ctx.message.author.mention}")
 
 @bot.command()
 # Ban a member
@@ -80,25 +78,10 @@ async def kick(ctx, member: discord.Member, *, reason=None):
 
 @bot.command()
 # Change activity of bot
-@command.has_permissions(administrator=True)
+@commands.has_permissions(administrator=True)
 async def activity(ctx,*,activity):
       await bot.change_presence(activity = discord.Game(name=activity))
       await ctx.send(f"Bot's activity changed to {activity}")
-
-# Embed information about author
-
-@bot.command()
-
-async def embeduserinfo(ctx):
-    user = ctx.author
-    embed = discord.Embed(title="User Info",description = f"Here is the embedded info about {user}",colour= user.colour)
-    embed.add_field(name="NAME", value=user.name, inline=True)
-    embed.add_field(name="NICKNAME", value=user.nick, inline=True)
-    embed.add_field(name="ID", value=user.id, inline=True)
-    embed.add_field(name="STATUS", value=user.status, inline=True)
-    embed.add_field(name="TOP ROLE", value=user.top_role.name, inline=True)
-    await ctx.send(embed=embed)
-
 
 # Custom help command for discord bot
 
@@ -130,10 +113,15 @@ async def help(ctx,commandsent = None):
         await ctx.message.delete()
         await ctx.author.send(embed=embed)
 
-        
+@bot.command(description="repeats the specified message every specified seconds")
+async def repeatmessage(ctx, enabled="start", interval=10, message=""):
+    if enabled.lower() == "stop":
+        messageInterval.cancel()
+    elif enabled.lower() == "start":
+        messageInterval.change_interval(seconds=int(interval))
+        messageInterval.start(ctx, message)
+    
 @tasks.loop(seconds=10)
 async def messageInterval(ctx, message):
-    await ctx.send(message)
-
-
+      await ctx.send(message) 
 bot.run(token)
