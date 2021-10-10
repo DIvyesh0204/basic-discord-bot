@@ -57,9 +57,9 @@ for file_name in os.listdir("./cogs"):
 
 
 
-# @bot.command()
-# async def hi(ctx,member):
-#     await ctx.send(f"Hello {ctx.message.author.mention}")
+@bot.command()
+async def hi(ctx,member):
+    await ctx.send(f"Hello {ctx.message.author.mention}")
 
 @bot.command()
 # Ban a member
@@ -78,7 +78,7 @@ async def kick(ctx, member: discord.Member, *, reason=None):
 
 @bot.command()
 # Change activity of bot
-@commands.has_permissions(administrator=True)
+# @commands.has_permissions(administrator=True)
 async def activity(ctx,*,activity):
       await bot.change_presence(activity = discord.Game(name=activity))
       await ctx.send(f"Bot's activity changed to {activity}")

@@ -24,10 +24,10 @@ class Info(commands.Cog):
         await ctx.send(embed=embed)
 
 
-    @commands.command()
-    async def hi(self,ctx):
-          print(25)
-          await ctx.send(f"Hello! {ctx.message.author.mention}")
+    # @commands.command()
+    # async def hi(self,ctx):
+    #       print(25)
+    #       await ctx.send(f"Hello! {ctx.message.author.mention}")
 
 
 def setup(bot):
